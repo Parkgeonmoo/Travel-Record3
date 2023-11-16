@@ -1,10 +1,9 @@
-package toy.five.triprecord.domain.wish.conroller;
+package toy.five.triprecord.domain.wish.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import toy.five.triprecord.domain.trip.dto.request.TripCreateRequest;
 import toy.five.triprecord.domain.trip.dto.response.TripCreateResponse;
-import toy.five.triprecord.domain.trip.entity.Domestic;
 import toy.five.triprecord.domain.trip.service.TripService;
 
 import java.time.LocalDateTime;
@@ -26,7 +25,7 @@ public class TripSetUp {
                     .build();
 
     public TripCreateResponse saveTrip() {
-        return tripService.createTrip(tripCreateRequest);
+        return tripService.createTrip(tripCreateRequest, "test12345@test.com");
     }
 
 }

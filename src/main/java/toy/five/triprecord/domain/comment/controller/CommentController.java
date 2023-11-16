@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import toy.five.triprecord.domain.comment.dto.request.CommentRequest;
 import toy.five.triprecord.domain.comment.service.CommentService;
@@ -20,16 +22,15 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/{tripId}/comments")
-    public ResponseEntity<ApiResponse> createComment(@PathVariable Long tripId, @Valid @RequestBody CommentRequest request
-                                            // TODO: 로그인 기능 구현 후 추가 작업 필요
+    public ResponseEntity<ApiResponse> createComment(@PathVariable Long tripId, @Valid @RequestBody CommentRequest request,
+                                                     @AuthenticationPrincipal UserDetails userDetails
     ) {
-        // TODO: nickname -> 로그인 후 유저정보에서 nickname 정보 가져오기
 
         return ResponseEntity.ok(
             ApiResponse.builder()
                 .status(String.valueOf(StatusCode.SUCCESS))
                 .code(HttpStatus.OK.value())
-                .data(commentService.save(tripId, "nickname", request))
+                .data(commentService.save(tripId, userDetails.getUsername(), request))
                 .build()
         );
     }

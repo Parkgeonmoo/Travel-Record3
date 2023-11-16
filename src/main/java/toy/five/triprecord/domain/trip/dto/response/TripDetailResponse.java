@@ -12,6 +12,7 @@ import toy.five.triprecord.domain.jouney.dto.response.JourneyDetailResponse;
 import toy.five.triprecord.domain.trip.entity.Domestic;
 import toy.five.triprecord.domain.trip.entity.Trip;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;

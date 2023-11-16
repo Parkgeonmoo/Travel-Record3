@@ -1,3 +1,6 @@
 spring:
   datasource:
     url: jdbc:h2:mem:testdb;NON_KEYWORDS=USER
+
+  jwt:
+    secret: SGWw9ffMeji1wWQub1WYx5VmIxEPg3uDDn3j0KTVQstPzqnR+HyCFIn0OAqTm5DJOymrtMNAmx0K5RPTxuMqPdDuUhDr+fu8ahKXnyny+Ll7IoOUtbQfGg3F/oJtKJRE4XLXz7BRMIIVDjTk+YJMYLojy/naao+Dt0otNWRkyneN2X4mbEcJrf2ad0Bf6iwdi5ZofAjLcW5lf1eD9gjGtFZ/sfHSEM1aZttAFuSSEReShyqOqIF1L971+2xdQw3rY2WA78fjxCMSUwQpQFdK9/bDf3706foywkWfta8lGoVA7y4rwE0uWMoMN+VpjbWBZ+RyysO0nFu8Rrivnb8XD31e12axFpdeh0tr2fbodFU=

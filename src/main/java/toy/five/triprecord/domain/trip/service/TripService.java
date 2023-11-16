@@ -17,12 +17,15 @@ import toy.five.triprecord.domain.trip.entity.Trip;
 import toy.five.triprecord.domain.trip.repository.TripRepository;
 import toy.five.triprecord.domain.trip.dto.request.TripSearchCond;
 import toy.five.triprecord.domain.trip.validation.patch.TripPatchTimeValidatorUtils;
+import toy.five.triprecord.domain.user.entity.User;
+import toy.five.triprecord.domain.user.repository.UserRepository;
 import toy.five.triprecord.global.exception.BaseException;
 import toy.five.triprecord.global.exception.ErrorCode;
 
 import java.util.*;
 
 import static toy.five.triprecord.global.exception.ErrorCode.TRIP_NO_EXIST;
+import static toy.five.triprecord.global.exception.ErrorCode.USER_NO_EXIST;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +34,7 @@ public class TripService {
 
     private final TripRepository tripRepository;
     private final TripPatchTimeValidatorUtils tripPatchTimeValidatorUtils;
-
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public TripDetailResponse getTripById(Long tripId) {
@@ -51,6 +54,15 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
+    public List<TripDetailResponse> getMyAllTripsPaging(Pageable pageable, String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BaseException(USER_NO_EXIST));
+        return tripRepository.findAllByUser(user, pageable).stream()
+                .map(
+                        trip -> TripDetailResponse.fromEntity(trip, getJourneysFromTripBySorted(trip))
+                ).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<TripDetailResponse> getAllTripsBySearchCond(TripSearchCond cond) {
         return tripRepository.findAllBySearchCond(cond).stream()
                 .map(
@@ -59,9 +71,11 @@ public class TripService {
     }
 
     @Transactional
-    public TripCreateResponse createTrip(TripCreateRequest tripCreateRequest) {
+    public TripCreateResponse createTrip(TripCreateRequest tripCreateRequest, String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new BaseException(USER_NO_EXIST));
 
         Trip newTrip = Trip.builder()
+                .user(user)
                 .name(tripCreateRequest.getName())
                 .startTime(tripCreateRequest.getStartTime())
                 .endTime(tripCreateRequest.getEndTime())

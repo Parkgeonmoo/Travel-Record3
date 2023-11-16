@@ -30,4 +30,12 @@ public class JourneyCreateResponse {
                 .build();
     }
 
+    @Override
+    public String toString() {
+        return "JourneyCreateResponse{" +
+                "moves=" + moves +
+                ", visits=" + visits +
+                ", lodgments=" + lodgments +
+                '}';
+    }
 }

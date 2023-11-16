@@ -22,8 +22,8 @@ public class WishService {
     private final TripRepository tripRepository;
 
     @Transactional
-    public long saveWish(Long userId, Long tripId) {
-        User findUser = findUserById(userId);
+    public long saveWish(String userEmail, Long tripId) {
+        User findUser = findUserByEmail(userEmail);
         Trip findTrip = findTripById(tripId);
 
         if(isExistWishByUserAndTrip(findUser, findTrip))
@@ -39,8 +39,8 @@ public class WishService {
     }
 
     @Transactional
-    public long deleteWish(Long userId, Long tripId) {
-        User findUser = findUserById(userId);
+    public long deleteWish(String userEmail, Long tripId) {
+        User findUser = findUserByEmail(userEmail);
         Trip findTrip = findTripById(tripId);
 
         Wish findWish = wishRepository.findByUserAndTrip(findUser, findTrip)
@@ -50,8 +50,8 @@ public class WishService {
         return findTrip.minusWishCount();
     }
 
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
+    private User findUserByEmail(String userEmail) {
+        return userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new BaseException(USER_NO_EXIST));
     }
 

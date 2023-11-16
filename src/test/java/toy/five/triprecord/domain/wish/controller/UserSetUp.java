@@ -1,4 +1,4 @@
-package toy.five.triprecord.domain.wish.conroller;
+package toy.five.triprecord.domain.wish.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

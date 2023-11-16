@@ -39,4 +39,18 @@ public class MoveJourneyCreateResponse {
                 .endTime(entity.getEndTime())
                 .build();
     }
+
+    @Override
+    public String toString() {
+        return "MoveJourneyCreateResponse{" +
+                "tripId=" + tripId +
+                ", name='" + name + '\'' +
+                ", vehicle='" + vehicle + '\'' +
+                ", startPoint='" + startPoint + '\'' +
+                ", endPoint='" + endPoint + '\'' +
+                ", type=" + type +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
+    }
 }

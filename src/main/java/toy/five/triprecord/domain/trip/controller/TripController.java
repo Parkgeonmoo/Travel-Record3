@@ -22,6 +22,7 @@ import toy.five.triprecord.domain.trip.entity.Domestic;
 import toy.five.triprecord.domain.trip.service.TripService;
 import toy.five.triprecord.global.exception.ApiResponse;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,6 +60,21 @@ public class TripController {
         );
     }
 
+    @GetMapping("/myAll")
+    public ResponseEntity<ApiResponse> getAllTripsByUser(
+            @PageableDefault(size=5, sort = "startTime", direction = Sort.Direction.ASC)
+            Pageable pageable,
+            Principal principal
+    ) {
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .status("Success")
+                        .code(HttpStatus.OK.value())
+                        .data(tripService.getMyAllTripsPaging(pageable, principal.getName()))
+                        .build()
+        );
+    }
+
     @GetMapping("/search")
     public ResponseEntity<ApiResponse> getAllTripsBySearch(@Valid @RequestBody TripSearchCond cond) {
         return ResponseEntity.ok(
@@ -71,8 +87,11 @@ public class TripController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createTrip(@Valid @RequestBody TripCreateRequest tripCreateRequest) {
-        TripCreateResponse savedTrip = tripService.createTrip(tripCreateRequest);
+    public ResponseEntity<ApiResponse> createTrip(
+            @Valid @RequestBody TripCreateRequest tripCreateRequest,
+            Principal principal
+    ) {
+        TripCreateResponse savedTrip = tripService.createTrip(tripCreateRequest, principal.getName());
         return ResponseEntity.ok(ApiResponse.builder().status("Success").code(HttpStatus.OK.value()).data(savedTrip).build());
     }
 
@@ -88,27 +107,6 @@ public class TripController {
     public ResponseEntity<ApiResponse> PatchTrip(@NotNull @PathVariable Long tripId, @Valid @RequestBody TripPatchRequest tripPatchRequest) {
         TripPatchResponse savedTrip = tripService.patchTrip(tripId,tripPatchRequest);
         return ResponseEntity.ok(ApiResponse.builder().status("Success").code(HttpStatus.OK.value()).data(savedTrip).build());
-    }
-
-//    @PostConstruct
-    public void init() {
-        tripService.createTrip(
-                TripCreateRequest.builder()
-                        .name("여행1")
-                        .startTime(LocalDateTime.now())
-                        .endTime(LocalDateTime.now())
-                        .domestic(Domestic.ABROAD)
-                        .build()
-        );
-
-        tripService.createTrip(
-                TripCreateRequest.builder()
-                        .name("여행2")
-                        .startTime(LocalDateTime.now())
-                        .endTime(LocalDateTime.now())
-                        .domestic(Domestic.DOMESTIC)
-                        .build()
-        );
     }
 
 }
