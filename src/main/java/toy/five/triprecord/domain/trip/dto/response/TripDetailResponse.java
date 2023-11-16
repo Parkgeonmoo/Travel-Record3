@@ -1,5 +1,7 @@
 package toy.five.triprecord.domain.trip.dto.response;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -11,12 +13,15 @@ import toy.five.triprecord.domain.trip.entity.Domestic;
 import toy.five.triprecord.domain.trip.entity.Trip;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TripDetailResponse {
 
     private Long id;
@@ -26,6 +31,7 @@ public class TripDetailResponse {
     @Enumerated(EnumType.STRING)
     private Domestic domestic;
     private List<JourneyDetailResponse> journeys;
+    private Long wishCount;
 
     public static TripDetailResponse fromEntity(
             Trip trip,
@@ -37,7 +43,8 @@ public class TripDetailResponse {
                 .startTime(trip.getStartTime())
                 .endTime(trip.getEndTime())
                 .domestic(trip.getDomestic())
-                .journeys(journeyResponses)
+                .journeys(Optional.ofNullable(journeyResponses).orElseGet(Collections::emptyList))
+                .wishCount(trip.getWishCount())
                 .build();
     }
 }

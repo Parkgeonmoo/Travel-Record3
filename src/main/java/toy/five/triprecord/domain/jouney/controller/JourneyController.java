@@ -3,14 +3,11 @@ package toy.five.triprecord.domain.jouney.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import toy.five.triprecord.domain.jouney.dto.request.*;
-import toy.five.triprecord.domain.jouney.dto.response.JourneyCreateResponse;
-import toy.five.triprecord.domain.jouney.dto.response.LodgmentJourneyUpdateResponse;
-import toy.five.triprecord.domain.jouney.dto.response.MoveJourneyUpdateResponse;
-import toy.five.triprecord.domain.jouney.dto.response.VisitJourneyUpdateResponse;
+import toy.five.triprecord.domain.jouney.dto.response.*;
 import toy.five.triprecord.domain.jouney.service.JourneyService;
 import toy.five.triprecord.global.exception.ApiResponse;
 
@@ -25,18 +22,19 @@ import static toy.five.triprecord.domain.jouney.entity.JourneyType.*;
 @RestController
 public class JourneyController {
 
-    private JourneyService journeyService;
-
-    @Autowired
-    public JourneyController(JourneyService journeyService) {
-        this.journeyService = journeyService;
-    }
+    private final JourneyService journeyService;
 
     @GetMapping
     public ResponseEntity<ApiResponse> getAllJourneysByTrip(@RequestParam Long tripId) {
 
-        return journeyService.getAllJourneysByTripId(tripId);
+        List<JourneyDetailResponse> journeyDetailResponses = journeyService.getAllJourneysByTripId(tripId);
 
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .status("Success")
+                        .code(HttpStatus.OK.value())
+                        .data(journeyDetailResponses)
+                        .build());
     }
 
     @PostMapping("/{tripId}")
@@ -44,7 +42,14 @@ public class JourneyController {
             @PathVariable Long tripId,
             @RequestBody @Valid JourneyCreateRequest request
     ) {
-        return journeyService.saveJourneys(tripId, request);
+        JourneyCreateResponse journeyCreateResponse = journeyService.saveJourneys(tripId, request);
+
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                    .status("Success")
+                    .code(HttpStatus.OK.value())
+                    .data(journeyCreateResponse)
+                    .build());
     }
 
     @PutMapping("/move/{journeyId}")
@@ -52,7 +57,14 @@ public class JourneyController {
             @PathVariable Long journeyId,
             @RequestBody @Valid MoveJourneyUpdateRequest updateRequest
     ) {
-        return journeyService.modifyMoveJourney(journeyId, updateRequest);
+        MoveJourneyUpdateResponse moveJourneyUpdateResponse = journeyService.modifyMoveJourney(journeyId, updateRequest);
+
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .status("Success")
+                        .code(HttpStatus.OK.value())
+                        .data(moveJourneyUpdateResponse)
+                        .build());
     }
 
     @PutMapping("/lodgment/{journeyId}")
@@ -60,7 +72,14 @@ public class JourneyController {
             @PathVariable Long journeyId,
             @RequestBody @Valid LodgmentJourneyUpdateRequest updateRequest
     ) {
-        return journeyService.modifyLodgmentJourney(journeyId, updateRequest);
+        LodgmentJourneyUpdateResponse lodgmentJourneyUpdateResponse = journeyService.modifyLodgmentJourney(journeyId, updateRequest);
+
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .status("Success")
+                        .code(HttpStatus.OK.value())
+                        .data(lodgmentJourneyUpdateResponse)
+                        .build());
     }
 
     @PutMapping("/visit/{journeyId}")
@@ -69,7 +88,14 @@ public class JourneyController {
             @RequestBody @Valid VisitJourneyUpdateRequest updateRequest
     ) {
 
-        return journeyService.modifyVisitJourney(journeyId, updateRequest);
+        VisitJourneyUpdateResponse visitJourneyUpdateResponse = journeyService.modifyVisitJourney(journeyId, updateRequest);
+
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .status("Success")
+                        .code(HttpStatus.OK.value())
+                        .data(visitJourneyUpdateResponse)
+                        .build());
     }
 
 

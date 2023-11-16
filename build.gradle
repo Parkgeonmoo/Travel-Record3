@@ -26,19 +26,48 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	compileOnly 'org.projectlombok:lombok'
-//	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 	implementation 'mysql:mysql-connector-java:8.0.28'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.json:json:20210307'
+	testImplementation 'com.h2database:h2'
 
 
+	// JWT 관련 의존성 (버전 똑같이 맞춰주자)
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 관련 API
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'   // JWT 관련 API 의 구현체
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'// JWT 토큰을 생성하거나 파싱할 때 JSON 처리 관련
 
 
-
+	//Query DSL 설정
+	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// === Querydsl 빌드 옵션 ===
+def querydslDir = "src/main/generated"
+
+sourceSets {
+	main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile) {
+	options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+clean.doLast {
+	file(querydslDir).deleteDir()
+}
+
+
+

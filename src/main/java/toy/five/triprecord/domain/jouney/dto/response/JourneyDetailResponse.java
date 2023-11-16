@@ -7,10 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import toy.five.triprecord.domain.jouney.entity.JourneyType;
-import toy.five.triprecord.domain.jouney.entity.LodgmentJourney;
-import toy.five.triprecord.domain.jouney.entity.MoveJourney;
-import toy.five.triprecord.domain.jouney.entity.VisitJourney;
+import toy.five.triprecord.domain.jouney.entity.*;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +27,10 @@ public class JourneyDetailResponse {
     private String vehicle;
     private String startPoint;
     private String endPoint;
+    private Location visitLocation;
+    private Location lodgementLocation;
+    private Location startLocation;
+    private Location endPointLocation;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
@@ -43,6 +44,8 @@ public class JourneyDetailResponse {
                 .type(entity.getType())
                 .startTime(entity.getStartTime())
                 .endTime(entity.getEndTime())
+                .startLocation(entity.getStartLocation())
+                .endPointLocation(entity.getEndPointLocation())
                 .build();
     }
 
@@ -54,6 +57,7 @@ public class JourneyDetailResponse {
                 .type(entity.getType())
                 .startTime(entity.getStartTime())
                 .endTime(entity.getEndTime())
+                .lodgementLocation(entity.getLodgmentLocation())
                 .build();
     }
 
@@ -65,6 +69,7 @@ public class JourneyDetailResponse {
                 .type(entity.getType())
                 .startTime(entity.getStartTime())
                 .endTime(entity.getEndTime())
+                .visitLocation(entity.getVisitLocation())
                 .build();
     }
 

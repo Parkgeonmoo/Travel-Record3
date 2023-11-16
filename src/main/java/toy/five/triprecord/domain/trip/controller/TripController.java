@@ -10,6 +10,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import toy.five.triprecord.domain.trip.dto.request.TripSearchCond;
 import toy.five.triprecord.domain.trip.dto.response.TripDetailResponse;
 import toy.five.triprecord.domain.trip.dto.request.TripCreateRequest;
 import toy.five.triprecord.domain.trip.dto.request.TripPatchRequest;
@@ -54,6 +55,17 @@ public class TripController {
                         .status("Success")
                         .code(HttpStatus.OK.value())
                         .data(tripService.getAllTripsPaging(pageable))
+                        .build()
+        );
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse> getAllTripsBySearch(@Valid @RequestBody TripSearchCond cond) {
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .status("Success")
+                        .code(HttpStatus.OK.value())
+                        .data(tripService.getAllTripsBySearchCond(cond))
                         .build()
         );
     }

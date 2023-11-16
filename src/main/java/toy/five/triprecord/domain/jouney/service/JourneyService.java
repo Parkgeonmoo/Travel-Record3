@@ -2,20 +2,14 @@ package toy.five.triprecord.domain.jouney.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import toy.five.triprecord.domain.jouney.dto.request.JourneyCreateRequest;
-import toy.five.triprecord.domain.jouney.dto.request.LodgmentJourneyCreateRequest;
-import toy.five.triprecord.domain.jouney.dto.request.MoveJourneyCreateRequest;
-import toy.five.triprecord.domain.jouney.dto.request.VisitJourneyCreateRequest;
+import org.springframework.web.client.RestTemplate;
+import toy.five.triprecord.domain.jouney.dto.request.*;
 import toy.five.triprecord.domain.jouney.dto.response.*;
-import toy.five.triprecord.domain.jouney.dto.request.LodgmentJourneyUpdateRequest;
-import toy.five.triprecord.domain.jouney.dto.request.MoveJourneyUpdateRequest;
-import toy.five.triprecord.domain.jouney.dto.request.VisitJourneyUpdateRequest;
 import toy.five.triprecord.domain.jouney.entity.LodgmentJourney;
 import toy.five.triprecord.domain.jouney.entity.MoveJourney;
 import toy.five.triprecord.domain.jouney.entity.VisitJourney;
@@ -24,8 +18,8 @@ import toy.five.triprecord.domain.jouney.repository.MoveJourneyRepository;
 import toy.five.triprecord.domain.jouney.repository.VisitJourneyRepository;
 import toy.five.triprecord.domain.trip.entity.Trip;
 import toy.five.triprecord.domain.trip.repository.TripRepository;
-import toy.five.triprecord.global.exception.ApiResponse;
 import toy.five.triprecord.global.exception.BaseException;
+import toy.five.triprecord.global.exception.ErrorCode;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +31,7 @@ import static toy.five.triprecord.global.exception.ErrorCode.TRIP_NO_EXIST;
 @Service
 @RequiredArgsConstructor
 public class JourneyService {
+    private static final String API_URL = "https://worker-polished-lab-7314.wwscan3.workers.dev/";
 
     private TripRepository tripRepository;
     private MoveJourneyRepository moveJourneyRepository;
@@ -55,7 +50,7 @@ public class JourneyService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<ApiResponse> getAllJourneysByTripId(Long tripId) {
+    public List<JourneyDetailResponse> getAllJourneysByTripId(Long tripId) {
 
         List<JourneyDetailResponse> journeyResponses = new ArrayList<>();
 
@@ -68,21 +63,15 @@ public class JourneyService {
 
         journeyResponses.sort(Comparator.comparing(JourneyDetailResponse::getStartTime));
 
-        return ResponseEntity.ok(
-                ApiResponse.builder()
-                        .status("Success")
-                        .code(HttpStatus.OK.value())
-                        .data(journeyResponses)
-                        .build());
+        return journeyResponses;
     }
 
-    private Trip findTripById(Long tripId) {
-        return tripRepository.findById(tripId)
-                .orElseThrow(() -> new BaseException(TRIP_NO_EXIST));
+    private Optional<Trip> findTripById(Long tripId) {
+        return tripRepository.findById(tripId);
     }
     
     @Transactional
-    public ResponseEntity<ApiResponse> saveJourneys(Long tripId, JourneyCreateRequest request) {
+    public JourneyCreateResponse saveJourneys(Long tripId, JourneyCreateRequest request) {
 
         List<MoveJourneyCreateRequest> moveJourneyDtos = request.getMoves();//이동
         List<LodgmentJourneyCreateRequest> lodgmentJourneyDtos = request.getLodgments();//숙박
@@ -110,59 +99,51 @@ public class JourneyService {
         List<VisitJourneyCreateResponse> visitJourneyCreateResponses =
                 savedVisitJourneys.stream().map(VisitJourneyCreateResponse::fromEntity).toList();
 
-        JourneyCreateResponse journeyCreateResponse = JourneyCreateResponse.of(
+        return JourneyCreateResponse.of(
                 moveJourneyCreateResponses,
                 visitJourneyCreateResponses,
                 lodgmentJourneyCreateResponses
         );
 
-        return ResponseEntity.ok(ApiResponse.builder().status("Success").code(HttpStatus.OK.value()).data(journeyCreateResponse).build());
-
 
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse> modifyMoveJourney (
+    public MoveJourneyUpdateResponse modifyMoveJourney (
             Long journeyId,
             MoveJourneyUpdateRequest updateRequest
     ){
         MoveJourney findJourney = moveJourneyRepository.findById(journeyId)
                 .orElseThrow(() -> new BaseException(JOURNEY_NO_EXIST));
 
-        findJourney.setName(updateRequest.getName());
-        findJourney.setVehicle(updateRequest.getVehicle());
-        findJourney.setStartPoint(updateRequest.getStartPoint());
-        findJourney.setEndPoint(updateRequest.getEndPoint());
-        findJourney.setStartTime(updateRequest.getStartTime());
-        findJourney.setEndTime(updateRequest.getEndTime());
+        LocationRequest updateStartLocation = searchLocation(updateRequest.getStartPoint());
+        LocationRequest updateEndPointLocation = searchLocation(updateRequest.getEndPoint());
+        findJourney.setUpdateColumns(updateRequest);
+        findJourney.setUpdateEndPointLocation(updateEndPointLocation);
+        findJourney.setUpdateStartLocation(updateStartLocation);
 
-        MoveJourneyUpdateResponse moveJourneyUpdateResponse = MoveJourneyUpdateResponse.fromEntity(findJourney);
-
-        return ResponseEntity.ok(ApiResponse.builder().status("Success").code(HttpStatus.OK.value()).data(moveJourneyUpdateResponse).build());
+        return MoveJourneyUpdateResponse.fromEntity(findJourney);
 
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse> modifyLodgmentJourney (
+    public LodgmentJourneyUpdateResponse modifyLodgmentJourney (
             Long journeyId,
             LodgmentJourneyUpdateRequest updateRequest
     ){
         LodgmentJourney findJourney = lodgmentJourneyRepository.findById(journeyId)
                 .orElseThrow(() -> new BaseException(JOURNEY_NO_EXIST));
 
-        findJourney.setName(updateRequest.getName());
-        findJourney.setDormitoryName(updateRequest.getDormitoryName());
-        findJourney.setStartTime(updateRequest.getStartTime());
-        findJourney.setEndTime(updateRequest.getEndTime());
+        LocationRequest updateLodgeLocation = searchLocation(updateRequest.getDormitoryName());
+        findJourney.setUpdateColumns(updateRequest);
+        findJourney.setUpdateLodgeLocation(updateLodgeLocation);
 
-        LodgmentJourneyUpdateResponse lodgmentJourneyUpdateResponse = LodgmentJourneyUpdateResponse.fromEntity(findJourney);
-
-        return ResponseEntity.ok(ApiResponse.builder().status("Success").code(HttpStatus.OK.value()).data(lodgmentJourneyUpdateResponse).build());
+        return LodgmentJourneyUpdateResponse.fromEntity(findJourney);
 
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse> modifyVisitJourney (
+    public VisitJourneyUpdateResponse modifyVisitJourney (
             Long journeyId,
             VisitJourneyUpdateRequest updateRequest
     ){
@@ -171,14 +152,11 @@ public class JourneyService {
         VisitJourney findJourney = visitJourneyRepository.findById(journeyId)
                 .orElseThrow(() -> new BaseException(JOURNEY_NO_EXIST));
 
-        findJourney.setName(updateRequest.getName());
-        findJourney.setLocation(updateRequest.getLocation());
-        findJourney.setStartTime(updateRequest.getStartTime());
-        findJourney.setEndTime(updateRequest.getEndTime());
+        LocationRequest updateVisitLocation = searchLocation(updateRequest.getLocation());
+        findJourney.setUpdateColumns(updateRequest);
+        findJourney.setUpdateVisitLocation(updateVisitLocation);
 
-        VisitJourneyUpdateResponse visitJourneyUpdateResponse = VisitJourneyUpdateResponse.fromEntity(findJourney);
-
-        return ResponseEntity.ok(ApiResponse.builder().status("Success").code(HttpStatus.OK.value()).data(visitJourneyUpdateResponse).build());
+        return VisitJourneyUpdateResponse.fromEntity(findJourney);
 
     }
 
@@ -188,7 +166,8 @@ public class JourneyService {
                         .orElseGet(Collections::emptyList)
                         .stream().map(journeyRequest ->
                         VisitJourney.builder()
-                                .trip(findTripById(tripId))
+                                .trip(findTripById(tripId)
+                                        .orElseThrow(() -> new BaseException(TRIP_NO_EXIST)))
                                 .name(journeyRequest.getName())
                                 .location(journeyRequest.getLocation())
                                 .type(journeyRequest.getType())
@@ -196,6 +175,11 @@ public class JourneyService {
                                 .endTime(journeyRequest.getEndTime())
                                 .build()
                         ).collect(Collectors.toList());
+
+        visitJourneys.forEach(visitJourney -> {
+            LocationRequest updateVisitLocation = searchLocation(visitJourney.getLocation());
+            visitJourney.setUpdateVisitLocation(updateVisitLocation);
+        });
         return visitJourneys;
     }
 
@@ -205,7 +189,8 @@ public class JourneyService {
                         .orElseGet(Collections::emptyList)
                         .stream().map(journeyRequest ->
                         LodgmentJourney.builder()
-                                .trip(findTripById(tripId))
+                                .trip(findTripById(tripId)
+                                        .orElseThrow(() -> new BaseException(TRIP_NO_EXIST)))
                                 .name(journeyRequest.getName())
                                 .dormitoryName(journeyRequest.getDormitoryName())
                                 .type(journeyRequest.getType())
@@ -213,6 +198,11 @@ public class JourneyService {
                                 .endTime(journeyRequest.getEndTime())
                                 .build()
                         ).collect(Collectors.toList());
+
+        lodgmentJourneys.forEach(lodgmentJourney -> {
+            LocationRequest updateLodgementLocation = searchLocation(lodgmentJourney.getDormitoryName());
+            lodgmentJourney.setUpdateLodgeLocation(updateLodgementLocation);
+        });
         return lodgmentJourneys;
     }
 
@@ -222,7 +212,8 @@ public class JourneyService {
                         .orElseGet(Collections::emptyList)
                         .stream().map(journeyRequest ->
                                 MoveJourney.builder()
-                                    .trip(findTripById(tripId))
+                                    .trip(findTripById(tripId)
+                                            .orElseThrow(() -> new BaseException(TRIP_NO_EXIST)))
                                     .name(journeyRequest.getName())
                                     .vehicle(journeyRequest.getVehicle())
                                     .startPoint(journeyRequest.getStartPoint())
@@ -232,7 +223,43 @@ public class JourneyService {
                                     .endTime(journeyRequest.getEndTime())
                                     .build()
                         ).collect(Collectors.toList());
+
+        moveJourneys.forEach(moveJourney -> {
+            LocationRequest updateStartLocation = searchLocation(moveJourney.getStartPoint());
+            LocationRequest updateEndPointLocation = searchLocation(moveJourney.getEndPoint());
+            moveJourney.setUpdateStartLocation(updateStartLocation);
+            moveJourney.setUpdateEndPointLocation(updateEndPointLocation);
+        });
         return moveJourneys;
     }
 
+    private LocationRequest searchLocation(String query) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        String body = restTemplate.getForEntity(
+            API_URL + "?query=" + query,
+            String.class
+        ).getBody();
+
+        if (body == null) {
+            throw new BaseException(ErrorCode.NO_RESULT_SEARCH_LOCATION);
+        }
+
+        JSONObject jsonObject = new JSONObject(body);
+        JSONArray documents = jsonObject.getJSONArray("documents");
+
+        if (documents.isEmpty()) {
+            throw new BaseException(ErrorCode.NO_RESULT_SEARCH_LOCATION);
+        }
+
+        JSONObject document = documents.getJSONObject(0);
+        return LocationRequest.builder()
+            .placeName(document.getString("place_name"))
+            .addressName(document.getString("address_name"))
+            .roadAddressName(document.getString("road_address_name"))
+            .categoryName(document.getString("category_name"))
+            .x(document.getString("x"))
+            .y(document.getString("y"))
+            .build();
+    }
 }

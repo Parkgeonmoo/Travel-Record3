@@ -32,6 +32,4 @@ public class TripCreateRequest extends BaseTimeRequest {
     @NotNull(message ="필드가 전부 채워져야 합니다.")
     private Domestic domestic;
 
-
-
 }

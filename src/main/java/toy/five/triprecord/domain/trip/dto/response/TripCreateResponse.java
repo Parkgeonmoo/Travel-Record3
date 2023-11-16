@@ -2,8 +2,6 @@ package toy.five.triprecord.domain.trip.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +22,7 @@ public class TripCreateResponse {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Domestic domestic;
-
+    private Long wishCount;
 
     public static TripCreateResponse fromEntity(Trip entity) {
         return TripCreateResponse.builder()
@@ -33,6 +31,7 @@ public class TripCreateResponse {
                 .startTime(entity.getStartTime())
                 .endTime(entity.getEndTime())
                 .domestic(entity.getDomestic())
+                .wishCount(entity.getWishCount())
                 .build();
     }
 

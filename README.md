@@ -1,126 +1,28 @@
-# 💡 Topic
+# 토이 프로젝트2 : 여행 여정을 기록과 관리하는 SNS 서비스 3단계
 
-- **여행 여정을 기록과 관리하는 SNS 서비스**
-- 회원이 서비스를 로그인하여 자신의 정보 관리 및 자신의 여행에 대한 정보와 여정들에 대한 정보를 작성할 수 있으며 다른 회원이 작성한 여행글을 조회 및 댓글,좋아요를 달 수 있는 서비스
+### 프로젝트 일정 안내
+- (운영진) RFP 공개: 11월 8일(수)
+- (수강생) 프로젝트 기간: 11월 10일(금) ~ 11월 16일(목) 
+- (수강생) 결과물 제출: ~ 11월 16일(목) 23:59
+- (멘토진) 결과물 채점: 11월 20일(월) ~ 11월 26일(일)
 
+### 프로젝트 설명
+- [RFP](https://drive.google.com/file/d/1xIH0UZjbgpRJbGrFzt6ZjfStL5cL7EVu/view?usp=sharing)를 기반으로 팀별로 결과물을 작업하여 제출하시오. 
+- 달성 목표: Spring Security, JWT, JUnit, openapi 활용
+  - 여행의 여정 정보를 기록하고 조회하는 [ToyProject 2단계] RESTful API 고도화
+  - Spring Security 를 활용할 수 있도록, 사용자 테이블 추가 설계
+  - Spring Security 기반 인증/인가 구현
+  - MyBatis 또는 JPA를 활용하여 데이터베이스 연동
+  - 타인의 여행정보에 좋아요, 댓글 기능 구현
+  - 내가 ‘좋아요’ 누른 여행에 대한 목록 조회 기능 구현
+  - 전체 여행 중 검색어에 맞는 여행 정보 조회(=검색) 기능 구현
+  - 레이어 별 (Repository, Service, Controller) 테스트케이스 작성
+  - 네이버맵, 카카오맵, 구글맵 API 활용하여 위치 정보 표현
 
-
-
-# 📝 Summary
-
-여행에 대한 정보를 나누는 SNS들처럼 회원으로 가입을 하게 되면 다른 사람들이 작성한 여행글을 볼 수 있으며 여행글에 대해 댓글과 좋아요 표시를 남길 수 있다.
-또한, 자신이 다녀온 여행에 대한 정보와 여정들에 대한 정보를 작성할  수 있으며 회원 자신만의 정보를 조회,수정을 할 수 있도록 하는 SNS 서비스이다.
-
-
-
-
-# ⭐️ Key Function
-
-- 회원
-    - 사람들이 자신의 아이디를 만들어 로그인할 수 있다.
-    - 로그인 시간에 만료 시간을 두어 일정 시간이 지나면 서비스 사용을 위해 재로그인을 해야 한다.
-    - 아이디와,비밀번호를 통하여 인증을 진행하며 일치하지 않을 경우 서비스 사용을 할 수 없다.
-    - 자신의 정보를 조회 및 수정을 할 수 있다.
-- 여행
-    - 여행글을 등록할 수 있다.
-    - 여행글들을 검색할 수 있다.
-    - 여행을 조회하면서 여정들을 조회할 수 있다.
-    - 여행글을 일부분 또는 전부를 수정할 수 있다.
-    - 다른 사람의 여행글에 댓글 및 좋아요를 남길 수 있다.
-- 여정
-    - 여행에 여정을 등록할 수 있다.
-    - 여행의 여정들을 조회할 수 있다.
-    - 여정의 정보를 수정할 수 있다.   
-
-
-
-# 🛠 Tech Stack
-
-`JAVA`,`Spring Boot`,`Spring Security`,`Docker`,`MySQL`, `Github`,`Git`,`Slack`
-
-
-
-# ⚙️ Architecture
-
-`Domain Design Architecture`
-
-
-
-
-# 🧑🏻‍💻 Team
-
-- 백엔드 개발자 4명
-
-
-
-
-# 🤚🏻 Part
-
-- JWT 토큰을 이용한 로그인 구현 및 회원 도메인 API 개발
-- 시큐리티 적용
-- 여행 CU API 개발
-- 커스텀 예외 처리 및 공통 예외 처리 구현
-- 공통 API Response 구현
-
-
-# 📷 Screenshot
-
-## User
-### createUser
-![유저 도메인_createUser](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/3b34f0ec-cee1-4bf0-860b-39888640cf94)
-### entryAccessToken
-![유저 도메인_entryAccessToken](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/0a1e6a21-8f54-4fe0-abb6-b6d57a20f03d)
-### getUser
-![유저 도메인_getUser](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/7f6a635d-b1d5-4320-bcd2-986fb2923ff3)
-### loginUser
-![유저 도메인_loginUser](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/ca1d9063-cef2-4046-a106-3e8c5bb3e5bc)
-### patchUser
-![유저 도메인_patchUser](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/2cfcf695-dacc-4a0c-86d2-6137d86c6c05)
-### updateUser
-![유저 도메인_updateUser](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/aa95b84d-6b46-485c-8b5d-e8b1e5f27a63)
-
-## Trip
-### trips-post
-![trip_trips-post](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/fe216138-eecd-4362-863c-63c613b21a70)
-### trips-all
-![trip_trips-all](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/bbb26e7e-1ed2-4a23-acb0-8eec7efe11a0)
-### trips-myAll(get)
-![trip_trips-myAll(get)](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/43823092-339b-4df1-81c5-d0629e15b1c8)
-### trips-search(get)
-![trip_trps-search(get)](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/6c8cb143-f471-46d3-ae65-a9ca0aa4f509)
-
-## Journey
-### createJourney
-![여정도메인_createJourney](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/af36205e-9b55-46e2-962c-549b6f8895e7)
-### getAllJourneysByTrip
-![여정도메인_getAllJourneysByTrip](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/362ed889-b083-4565-ac71-bd4ad71248cc)
-### updateLodgmentJourney
-![여정도메인_updateLodgmentJourney](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/e8cf4565-af9a-4072-af06-ca8329edf0c7)
-### updateMoveJourney
-![여정도메인_updateMoveJourney](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/af923120-72b4-4e1d-8a65-2fb869deb86d)
-### updateVisitJourney
-![여정도메인_updateVisitJourney](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/a9fd25b4-027f-4acd-bb35-60445e1ce235)
-
-## Comment
-### POST
-![Comment_POST](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/3cc04c84-e153-45c3-b48a-e0a0bd5350fd)
-### GET
-![Comment_GET](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/c26c1bf7-b534-42a7-a343-436e2eecf675)
-### PUT
-![Comment_PUT](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/841ebce4-7478-41c9-942e-8c2b1e320f6b)
-### DELETE
-![Comment_DELETE](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/1bc7b6e5-2842-4e85-967d-9e4612a36977)
-
-## Wish
-### wishes(post)
-![wish_wishes(post)png](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/c5a3d46f-b4de-4b54-ae10-03b51c477e61)
-### wishes(delete)
-![wish_wishes(delete)](https://github.com/Group5-toy/KDT_Y_BE_Toy_Project3/assets/97028441/1ea4c1c0-0586-4d47-b72c-4a3875b119cc)
-
-
-
-
-
-
-
-
+### 프로젝트 진행 및 제출 방법
+- 기존 저장소(FastCampustKDTBackend/리포지토리)를 Fork합니다.
+- 각 조별로 개별 작업 후, 최종 완성본을 하나의 branch로 병합합니다.
+- 조별 리포지토리의 최종(main X) `branch` -> 기존 레포의 `main branch` **PR상태(commit 메시지 : N조 최종 제출)** 로 제출합니다.
+- `main branch`에 본인 `branch`의 `commit`을 `merge` 하지 마시길 바랍니다.
+- 멘토님들께서 어플리케이션 `실행`을 위해 확인해야 할 설정 값 등은 `README.md 파일에 작성` 또는 아래 `LMS 제출 시에 함께 전달` 부탁 드립니다. 
+- PR 링크는 온라인 교육장의 <패스트캠퍼스X야놀자 : 백엔드 개발 부트캠프_토이 프로젝트 3단계>를 통해 최종 제출(제출자: 조장) 부탁 드립니다. 

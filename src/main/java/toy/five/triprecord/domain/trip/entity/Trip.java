@@ -3,11 +3,15 @@ package toy.five.triprecord.domain.trip.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import toy.five.triprecord.domain.comment.entity.Comment;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 import toy.five.triprecord.domain.jouney.entity.LodgmentJourney;
 import toy.five.triprecord.domain.jouney.entity.MoveJourney;
 import toy.five.triprecord.domain.jouney.entity.VisitJourney;
 import toy.five.triprecord.domain.trip.dto.request.TripPatchRequest;
 import toy.five.triprecord.domain.trip.dto.request.TripUpdateRequest;
+import toy.five.triprecord.domain.user.entity.User;
 import toy.five.triprecord.global.common.BaseTimeEntity;
 
 import java.time.LocalDateTime;
@@ -18,12 +22,16 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
+@DynamicInsert
 public class Trip extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(length = 30)
     private String name;
@@ -37,6 +45,10 @@ public class Trip extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "trip", cascade = CascadeType.ALL)
     private List<LodgmentJourney> lodgmentJourneys;
 
+    @OneToMany(mappedBy = "trip", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OrderBy("id asc") // 댓글 정렬
+    private List<Comment> comments;
+
     @Column
     private LocalDateTime startTime;
 
@@ -46,6 +58,9 @@ public class Trip extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column
     private Domestic domestic;
+
+    @ColumnDefault("0")
+    private Long wishCount;
 
     private void updateName(String name) {
         if (!name.isEmpty()) {
@@ -71,6 +86,15 @@ public class Trip extends BaseTimeEntity {
         }
     }
 
+    public long plusWishCount() {
+        this.wishCount++;
+        return this.wishCount;
+    }
+
+    public long minusWishCount() {
+        this.wishCount--;
+        return this.wishCount;
+    }
 
     public void updateColumns(TripPatchRequest tripPatchRequest) {
         updateName(tripPatchRequest.getName());
@@ -86,13 +110,9 @@ public class Trip extends BaseTimeEntity {
         updateIsDomestic(tripUpdateRequest.getDomestic());
     }
 
-
-
-
-
-
-
-
-
+    @PrePersist
+    public void prePersist() {
+        this.wishCount = this.wishCount == null ? 0 : this.wishCount;
+    }
 
 }
