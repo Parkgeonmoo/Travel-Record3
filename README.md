@@ -36,7 +36,7 @@
 
 # 🛠 Tech Stack
 
-`JAVA`,`Spring Boot`,`Spring Security`,`Docker`,`MySQL`, `Github`,`Git`,`Slack`
+`JAVA`,`Spring Boot`,`Spring Security`,`Docker`,`MySQL`, `Github`,`Git`,`Slack`,`Redis`
 
 
 
